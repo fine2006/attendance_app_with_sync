@@ -1,15 +1,7 @@
-class Subject {
-  final String subjectName;
-  final int presentClasses;
-  final int absentClasses;
+import 'package:drift/drift.dart';
 
-  Subject(this.subjectName, this.presentClasses, this.absentClasses);
-
-  Map<String, dynamic> toMap() {
-    return {
-      'subject': subjectName,
-      'present': presentClasses,
-      'absent': absentClasses,
-    };
-  }
+class Subject extends Table {
+  TextColumn get name => text().withLength(min: 2, max: 32)();
+  IntColumn get presentDays => integer()();
+  IntColumn get absentDays => integer()();
 }

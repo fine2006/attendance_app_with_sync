@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:attendance_app_with_sync/components/subject_viewer.dart';
+import 'package:provider/provider.dart';
+import 'package:attendance_app_with_sync/database/database.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -11,28 +13,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final database = Provider.of<AppDatabase>(context);
     ColorScheme theme = Theme.of(context).colorScheme;
-    const subjects = <String>[
-      "Hindi",
-      "English",
-      "Maths",
-      "Science",
-      "Social Science",
-    ];
-    return Scaffold(
-      appBar: AppBar(
-        //backgroundColor: theme.inversePrimary,
-        title: Text(widget.title),
-        actions: [Icon(Icons.account_circle)],
-        actionsPadding: EdgeInsetsGeometry.all(10),
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          int columns = (constraints.maxWidth / 300).floor();
-          if (columns == 0) columns = 1;
-          return subjects.isEmpty
-              ? Center(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          //backgroundColor: theme.inversePrimary,
+          title: Text(widget.title),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
+          ],
+          actionsPadding: EdgeInsetsGeometry.all(10),
+        ),
+        body: StreamBuilder<List<SubjectData>>(
+          stream: database.allSubjects,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -51,27 +59,36 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-              )
-              : ListView.builder(
-                itemCount: 20,
-                itemExtent: 300,
-                shrinkWrap: false,
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return SubjectViewer(
-                    subject: subjects[index % 5],
-                    bgColor: theme.secondaryContainer,
-                    borderColor: theme.secondary,
+              );
+            } else {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  int columns = (constraints.maxWidth / 300).floor();
+                  if (columns == 0) columns = 1;
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    //itemExtent: 300,
+                    shrinkWrap: false,
+                    physics: BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return SubjectViewer(
+                        subject: snapshot.data![index].name,
+                        bgColor: theme.secondaryContainer,
+                        borderColor: theme.secondary,
+                      );
+                    },
                   );
                 },
               );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/newSubject');
-        },
-        child: const Icon(Icons.add),
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/newSubject');
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }

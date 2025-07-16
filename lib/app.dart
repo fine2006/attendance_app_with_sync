@@ -1,4 +1,5 @@
 import 'package:attendance_app_with_sync/screens/add_subject.dart';
+import 'package:attendance_app_with_sync/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:attendance_app_with_sync/screens/home.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => MyHomePage(title: "Home"),
             '/newSubject': (context) => AddSubject(),
+            '/settings': (context) => Settings(),
           },
         );
       },
