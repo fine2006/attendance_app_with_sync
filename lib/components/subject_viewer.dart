@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:attendance_app_with_sync/screens/subject_screen.dart';
 
 class SubjectViewer extends StatelessWidget {
   final String subject;
@@ -14,26 +15,33 @@ class SubjectViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ColorScheme theme = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: () {
-        print("$subject tapped");
-      },
-      child: Container(
-        margin: EdgeInsetsGeometry.all(10),
-        decoration: BoxDecoration(
-          color: bgColor,
-          border: BoxBorder.fromLTRB(
-            bottom: BorderSide(
-              color: borderColor,
-              width: 70,
-              style: BorderStyle.solid,
-            ),
+    TextStyle? textStyle = Theme.of(context).textTheme.headlineLarge;
+    return Container(
+      margin: EdgeInsetsGeometry.all(10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: BoxBorder.fromLTRB(
+          bottom: BorderSide(
+            color: borderColor,
+            width: 70,
+            style: BorderStyle.solid,
           ),
-          borderRadius: BorderRadiusGeometry.circular(20),
         ),
-        padding: EdgeInsetsGeometry.all(10),
+        borderRadius: BorderRadiusGeometry.circular(20),
+      ),
+      padding: EdgeInsetsGeometry.all(10),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubjectScreen(subject: subject),
+            ),
+          );
+        },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
@@ -72,11 +80,17 @@ class SubjectViewer extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              subject,
-              style: TextStyle(fontSize: 30),
-              textAlign: TextAlign.start,
-              softWrap: true,
+            Hero(
+              tag: subject,
+              child: Material(
+                type: MaterialType.transparency,
+                child: Text(
+                  subject,
+                  style: textStyle,
+                  //textAlign: TextAlign.start,
+                  //softWrap: true,
+                ),
+              ),
             ),
           ],
         ),
