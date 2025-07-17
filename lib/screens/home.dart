@@ -39,7 +39,15 @@ class _MyHomePageState extends State<MyHomePage> {
         body: StreamBuilder<List<SubjectData>>(
           stream: database.allSubjects,
           builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: SizedBox(
+                  height: 250,
+                  width: 250,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
