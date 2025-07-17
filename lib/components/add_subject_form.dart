@@ -25,40 +25,6 @@ class _AddSubjectFormState extends State<AddSubjectForm> {
   Widget build(BuildContext context) {
     final AppDatabase database = Provider.of<AppDatabase>(context);
     ColorScheme theme = Theme.of(context).colorScheme;
-    bool dupSubject = false;
-
-    void submit() async {
-      if (_formkey.currentState!.validate()) {
-        _formkey.currentState!.save();
-
-        FocusScope.of(context).requestFocus(FocusNode());
-
-        final currentSubjectStatus = await database.search(formController.text);
-        setState(() {
-          if (currentSubjectStatus) {
-            dupSubject = true;
-          }
-        });
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Subject ${formController.text} added succesfully"),
-            ),
-          );
-        }
-        database.addSubject(
-          SubjectCompanion(
-            name: drift.Value(formController.text),
-            absentDays: drift.Value(0),
-            presentDays: drift.Value(0),
-          ),
-        );
-        formController.clear();
-      }
-    }
-
-    _formkey.currentState?.validate();
-
     return Form(
       key: _formkey,
       child: Padding(
@@ -76,15 +42,31 @@ class _AddSubjectFormState extends State<AddSubjectForm> {
                   return "Subject name cannot be empty";
                 } else if (value.length > 32 || value.length < 2) {
                   return "The subject name must be at least 2 characters and at most 32 characters";
-                } else if (!dupSubject) {
-                  return "This subject already exists";
                 }
                 return null;
               },
             ),
             SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: () => submit(),
+              onPressed: () {
+                if (_formkey.currentState!.validate()) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Subject ${formController.text} added succesfully",
+                      ),
+                    ),
+                  );
+                  database.addSubject(
+                    SubjectCompanion(
+                      name: drift.Value(formController.text),
+                      absentDays: drift.Value(0),
+                      presentDays: drift.Value(0),
+                    ),
+                  );
+                  formController.clear();
+                }
+              },
               label: const Text("Add Subject"),
               icon: const Icon(Icons.add),
               style: ElevatedButton.styleFrom(
