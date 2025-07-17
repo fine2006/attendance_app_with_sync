@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:attendance_app_with_sync/screens/subject_screen.dart';
+import 'package:attendance_app_with_sync/database/database.dart';
 
 class SubjectViewer extends StatelessWidget {
-  final String subject;
   final Color? bgColor;
   final Color borderColor;
+  final SubjectData subject;
   const SubjectViewer({
     super.key,
     required this.subject,
@@ -52,7 +53,10 @@ class SubjectViewer extends StatelessWidget {
                   Expanded(
                     child: ListTile(
                       subtitle: Text("Present", textAlign: TextAlign.center),
-                      title: Text("0", textAlign: TextAlign.center),
+                      title: Text(
+                        "${subject.presentDays}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   VerticalDivider(
@@ -63,7 +67,10 @@ class SubjectViewer extends StatelessWidget {
                   Expanded(
                     child: ListTile(
                       subtitle: Text("Absent", textAlign: TextAlign.center),
-                      title: Text("0", textAlign: TextAlign.center),
+                      title: Text(
+                        "${subject.absentDays}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   VerticalDivider(
@@ -74,7 +81,10 @@ class SubjectViewer extends StatelessWidget {
                   Expanded(
                     child: ListTile(
                       subtitle: Text("Percent", textAlign: TextAlign.center),
-                      title: Text("0%", textAlign: TextAlign.center),
+                      title: Text(
+                        "${((subject.absentDays + subject.presentDays == 0) ? 0 : subject.presentDays * 100 / (subject.presentDays + subject.absentDays)).truncate()}%",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ],
@@ -85,7 +95,7 @@ class SubjectViewer extends StatelessWidget {
               child: Material(
                 type: MaterialType.transparency,
                 child: Text(
-                  subject,
+                  subject.name.toString(),
                   style: textStyle,
                   //textAlign: TextAlign.start,
                   //softWrap: true,

@@ -8,6 +8,19 @@ class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SubjectTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -44,7 +57,7 @@ class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [name, presentDays, absentDays];
+  List<GeneratedColumn> get $columns => [id, name, presentDays, absentDays];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -57,6 +70,9 @@ class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -88,11 +104,16 @@ class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   SubjectData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SubjectData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
       name:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -118,10 +139,12 @@ class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
 }
 
 class SubjectData extends DataClass implements Insertable<SubjectData> {
+  final int id;
   final String name;
   final int presentDays;
   final int absentDays;
   const SubjectData({
+    required this.id,
     required this.name,
     required this.presentDays,
     required this.absentDays,
@@ -129,6 +152,7 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['present_days'] = Variable<int>(presentDays);
     map['absent_days'] = Variable<int>(absentDays);
@@ -137,6 +161,7 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
 
   SubjectCompanion toCompanion(bool nullToAbsent) {
     return SubjectCompanion(
+      id: Value(id),
       name: Value(name),
       presentDays: Value(presentDays),
       absentDays: Value(absentDays),
@@ -149,6 +174,7 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SubjectData(
+      id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       presentDays: serializer.fromJson<int>(json['presentDays']),
       absentDays: serializer.fromJson<int>(json['absentDays']),
@@ -158,20 +184,27 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'presentDays': serializer.toJson<int>(presentDays),
       'absentDays': serializer.toJson<int>(absentDays),
     };
   }
 
-  SubjectData copyWith({String? name, int? presentDays, int? absentDays}) =>
-      SubjectData(
-        name: name ?? this.name,
-        presentDays: presentDays ?? this.presentDays,
-        absentDays: absentDays ?? this.absentDays,
-      );
+  SubjectData copyWith({
+    int? id,
+    String? name,
+    int? presentDays,
+    int? absentDays,
+  }) => SubjectData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    presentDays: presentDays ?? this.presentDays,
+    absentDays: absentDays ?? this.absentDays,
+  );
   SubjectData copyWithCompanion(SubjectCompanion data) {
     return SubjectData(
+      id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       presentDays:
           data.presentDays.present ? data.presentDays.value : this.presentDays,
@@ -183,6 +216,7 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
   @override
   String toString() {
     return (StringBuffer('SubjectData(')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('presentDays: $presentDays, ')
           ..write('absentDays: $absentDays')
@@ -191,66 +225,70 @@ class SubjectData extends DataClass implements Insertable<SubjectData> {
   }
 
   @override
-  int get hashCode => Object.hash(name, presentDays, absentDays);
+  int get hashCode => Object.hash(id, name, presentDays, absentDays);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SubjectData &&
+          other.id == this.id &&
           other.name == this.name &&
           other.presentDays == this.presentDays &&
           other.absentDays == this.absentDays);
 }
 
 class SubjectCompanion extends UpdateCompanion<SubjectData> {
+  final Value<int> id;
   final Value<String> name;
   final Value<int> presentDays;
   final Value<int> absentDays;
-  final Value<int> rowid;
   const SubjectCompanion({
+    this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.presentDays = const Value.absent(),
     this.absentDays = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   SubjectCompanion.insert({
+    this.id = const Value.absent(),
     required String name,
     required int presentDays,
     required int absentDays,
-    this.rowid = const Value.absent(),
   }) : name = Value(name),
        presentDays = Value(presentDays),
        absentDays = Value(absentDays);
   static Insertable<SubjectData> custom({
+    Expression<int>? id,
     Expression<String>? name,
     Expression<int>? presentDays,
     Expression<int>? absentDays,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (presentDays != null) 'present_days': presentDays,
       if (absentDays != null) 'absent_days': absentDays,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   SubjectCompanion copyWith({
+    Value<int>? id,
     Value<String>? name,
     Value<int>? presentDays,
     Value<int>? absentDays,
-    Value<int>? rowid,
   }) {
     return SubjectCompanion(
+      id: id ?? this.id,
       name: name ?? this.name,
       presentDays: presentDays ?? this.presentDays,
       absentDays: absentDays ?? this.absentDays,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -260,19 +298,16 @@ class SubjectCompanion extends UpdateCompanion<SubjectData> {
     if (absentDays.present) {
       map['absent_days'] = Variable<int>(absentDays.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('SubjectCompanion(')
+          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('presentDays: $presentDays, ')
-          ..write('absentDays: $absentDays, ')
-          ..write('rowid: $rowid')
+          ..write('absentDays: $absentDays')
           ..write(')'))
         .toString();
   }
@@ -291,17 +326,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $$SubjectTableCreateCompanionBuilder =
     SubjectCompanion Function({
+      Value<int> id,
       required String name,
       required int presentDays,
       required int absentDays,
-      Value<int> rowid,
     });
 typedef $$SubjectTableUpdateCompanionBuilder =
     SubjectCompanion Function({
+      Value<int> id,
       Value<String> name,
       Value<int> presentDays,
       Value<int> absentDays,
-      Value<int> rowid,
     });
 
 class $$SubjectTableFilterComposer
@@ -313,6 +348,11 @@ class $$SubjectTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
@@ -338,6 +378,11 @@ class $$SubjectTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -363,6 +408,9 @@ class $$SubjectTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -408,27 +456,27 @@ class $$SubjectTableTableManager
               () => $$SubjectTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<int> presentDays = const Value.absent(),
                 Value<int> absentDays = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => SubjectCompanion(
+                id: id,
                 name: name,
                 presentDays: presentDays,
                 absentDays: absentDays,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
+                Value<int> id = const Value.absent(),
                 required String name,
                 required int presentDays,
                 required int absentDays,
-                Value<int> rowid = const Value.absent(),
               }) => SubjectCompanion.insert(
+                id: id,
                 name: name,
                 presentDays: presentDays,
                 absentDays: absentDays,
-                rowid: rowid,
               ),
           withReferenceMapper:
               (p0) =>
