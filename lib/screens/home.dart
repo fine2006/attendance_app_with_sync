@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       return SubjectViewer(
-                        subject: snapshot.data![index].name,
+                        subject: snapshot.data![index],
                         bgColor: theme.secondaryContainer,
                         borderColor: theme.secondary,
                       );

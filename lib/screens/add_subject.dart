@@ -15,7 +15,7 @@ class AddSubject extends StatelessWidget {
         appBar: AppBar(title: Text("Add a Subject")),
         body: Column(
           children: [
-            AddSubjectForm(),
+            AddSubjectForm(database: database),
             StreamBuilder<List<SubjectData>>(
               stream: database.allSubjects,
               builder: (context, snapshot) {

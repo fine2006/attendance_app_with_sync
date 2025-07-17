@@ -34,7 +34,14 @@ class AppDatabase extends _$AppDatabase {
     return (select(subject)..where((t) => t.name.contains(c))).watch();
   }
 
-  Future<bool> search(String c) {
+  Stream<SubjectData> getData(int id) =>
+      (select(subject)..where((t) => t.id.equals(id))).watchSingle();
+
+  Future updateSubject(SubjectCompanion updatedSubject) {
+    return update(subject).replace(updatedSubject);
+  }
+
+  Future<bool> exists(String c) {
     return (select(subject)..where(
       (t) => t.name.equals(c),
     )).getSingleOrNull().then((value) => value != null);
