@@ -99,6 +99,29 @@ class _SubjectScreenState extends State<SubjectScreen> {
               StreamBuilder(
                 stream: subject,
                 builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    double percentage =
+                        snapshot.data!.presentDays /
+                        (snapshot.data!.presentDays +
+                            snapshot.data!.absentDays);
+                    List borderColor =
+                        (percentage >= 0.85)
+                            ? [Icons.check_circle, Colors.greenAccent]
+                            : (percentage >= 0.75)
+                            ? [Icons.warning, Colors.yellowAccent]
+                            : [Icons.error, Colors.redAccent];
+                    return Icon(
+                      color: borderColor[1],
+                      size: 150,
+                      borderColor[0],
+                    );
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              ),
+              StreamBuilder(
+                stream: subject,
+                builder: (context, snapshot) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [

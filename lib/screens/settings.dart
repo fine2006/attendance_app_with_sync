@@ -72,44 +72,74 @@ class _SettingsState extends State<Settings> {
       body: Column(
         children: [
           SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: menuTitles.length,
-              //itemExtent: 100,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(menuTitles[index]),
-                      isSlider[index]
-                          ? Text('${sliderValue[index].truncate()}')
-                          : SizedBox(width: 0),
-                    ],
-                  ),
-                  subtitle: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(menuDesc[index], softWrap: true),
-                      isSlider[index]
-                          ? (Slider(
-                            min: 0,
-                            max: 100,
-                            value: sliderValue[index],
-                            onChanged: (value) {
-                              setState(() {
-                                sliderValue[index] = value;
-                              });
-                            },
-                          ))
-                          : SizedBox(height: 0),
-                    ],
-                  ),
-                  onTap: menuFunc[index],
-                );
-              },
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(menuTitles[0]),
+                Text('${sliderValue[0].truncate()}'),
+              ],
             ),
+            subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(menuDesc[0], softWrap: true),
+                (Slider(
+                  min: 0,
+                  max: 100,
+                  value: sliderValue[0],
+                  onChanged: (value) {
+                    setState(() {
+                      sliderValue[0] =
+                          (value <= sliderValue[1]) ? sliderValue[1] : value;
+                    });
+                  },
+                )),
+              ],
+            ),
+            onTap: menuFunc[0],
+          ),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(menuTitles[1]),
+                Text('${sliderValue[1].truncate()}'),
+              ],
+            ),
+            subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(menuDesc[1], softWrap: true),
+                Slider(
+                  min: 0,
+                  max: 100,
+                  value: sliderValue[1],
+                  onChanged: (value) {
+                    setState(() {
+                      sliderValue[1] = (value);
+                      sliderValue[0] =
+                          (value >= sliderValue[0]) ? value : sliderValue[0];
+                    });
+                  },
+                ),
+              ],
+            ),
+            onTap: menuFunc[1],
+          ),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [Text(menuTitles[2])],
+            ),
+            subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Text(menuDesc[2], softWrap: true)],
+            ),
+            onTap: menuFunc[2],
           ),
         ],
       ),

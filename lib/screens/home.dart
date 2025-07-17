@@ -79,10 +79,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     shrinkWrap: false,
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
+                      double percentage =
+                          snapshot.data![index].presentDays /
+                          (snapshot.data![index].presentDays +
+                              snapshot.data![index].absentDays);
+                      MaterialAccentColor borderColor =
+                          (percentage >= 0.85)
+                              ? Colors.greenAccent
+                              : (percentage >= 0.75)
+                              ? Colors.yellowAccent
+                              : Colors.redAccent;
                       return SubjectViewer(
                         subject: snapshot.data![index],
                         bgColor: theme.secondaryContainer,
-                        borderColor: theme.secondary,
+                        borderColor: borderColor,
                       );
                     },
                   );
