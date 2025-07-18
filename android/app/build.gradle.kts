@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.attendance_app_with_sync"
+    namespace = "io.github.fine2006.attendance_app_with_sync"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.attendance_app_with_sync"
+        applicationId = "io.github.fine2006.attendance_app_with_sync"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
