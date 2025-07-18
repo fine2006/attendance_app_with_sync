@@ -80,13 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     physics: BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       double percentage =
-                          snapshot.data![index].presentDays /
+                          snapshot.data![index].presentDays *
+                          100 /
                           (snapshot.data![index].presentDays +
                               snapshot.data![index].absentDays);
                       MaterialAccentColor borderColor =
-                          (percentage >= 0.85)
+                          (percentage >= 85)
                               ? Colors.greenAccent
-                              : (percentage >= 0.75)
+                              : (percentage >= 75)
                               ? Colors.yellowAccent
                               : Colors.redAccent;
                       return SubjectViewer(
