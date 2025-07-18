@@ -4,7 +4,7 @@ project(attendance_app_with_sync LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "attendance_app_with_sync")
+set(BINARY_NAME "Attendance App")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
