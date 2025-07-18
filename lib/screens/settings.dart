@@ -16,27 +16,31 @@ class _SettingsState extends State<Settings> {
     "Clear All Subjects",
   ];
   final List<String> menuDesc = <String>[
-    "The percentage at which the subject is marked with yellow",
-    "The percentage at which the subject is marked with red",
+    //"The percentage at which the subject is marked with yellow",
+    //"The percentage at which the subject is marked with red",
+    "Coming soon!",
+    "Coming soon!",
     "Reset all settings, and delete all subjects",
   ];
   List<bool> isSlider = <bool>[true, true, false];
-  List<double> sliderValue = <double>[0, 0, 0];
+  List<double> sliderValue = <double>[85, 75, 0];
   @override
   Widget build(BuildContext context) {
     final AppDatabase database = Provider.of<AppDatabase>(context);
     final List menuFunc = [
-      (value) {
-        setState(() {
-          sliderValue[0] = (value <= sliderValue[1]) ? sliderValue[1] : value;
-        });
-      },
-      (value) {
-        setState(() {
-          sliderValue[1] = (value);
-          sliderValue[0] = (value >= sliderValue[0]) ? value : sliderValue[0];
-        });
-      },
+      //(value) {
+      //  setState(() {
+      //    sliderValue[0] = (value <= sliderValue[1]) ? sliderValue[1] : value;
+      //  });
+      //},
+      //(value) {
+      //  setState(() {
+      //    sliderValue[1] = (value);
+      //    sliderValue[0] = (value >= sliderValue[0]) ? value : sliderValue[0];
+      //  });
+      //},
+      null,
+      null,
       () {
         final superContext = context;
         showDialog(
@@ -78,6 +82,7 @@ class _SettingsState extends State<Settings> {
         children: [
           SizedBox(height: 10),
           ListTile(
+            enabled: false,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -102,6 +107,7 @@ class _SettingsState extends State<Settings> {
             onTap: null,
           ),
           ListTile(
+            enabled: false,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

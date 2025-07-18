@@ -37,15 +37,20 @@ class AppDatabase extends _$AppDatabase {
 
   Stream<SubjectData> getData(int id) =>
       (select(subject)..where((t) => t.id.equals(id))).watchSingle();
-  Stream<Threshold> getThresholds(int id) =>
-      (select(thresholds)..where((t) => t.id.equals(id))).watchSingle();
+  Stream<Threshold> getThresholds(int id) {
+    return (select(thresholds)..where((t) => t.id.equals(id))).watchSingle();
+  }
 
   Future updateSubject(SubjectCompanion updatedSubject) {
     return update(subject).replace(updatedSubject);
   }
 
-  Future upsertThreshold(ThresholdsCompanion threshold) {
-    return into(thresholds).insertOnConflictUpdate(threshold);
+  Future insertThreshold(ThresholdsCompanion threshold) {
+    return into(thresholds).insert(threshold);
+  }
+
+  Future updateThreshold(ThresholdsCompanion threshold) {
+    return update(thresholds).replace(threshold);
   }
 
   Future<bool> thresholdsExist(int id) {
