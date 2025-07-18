@@ -101,13 +101,14 @@ class _SubjectScreenState extends State<SubjectScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     double percentage =
-                        snapshot.data!.presentDays /
+                        snapshot.data!.presentDays *
+                        100 /
                         (snapshot.data!.presentDays +
                             snapshot.data!.absentDays);
                     List borderColor =
-                        (percentage >= 0.85)
+                        (percentage >= 85)
                             ? [Icons.check_circle, Colors.greenAccent]
-                            : (percentage >= 0.75)
+                            : (percentage >= 75)
                             ? [Icons.warning, Colors.yellowAccent]
                             : [Icons.error, Colors.redAccent];
                     return Icon(
