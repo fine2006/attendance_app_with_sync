@@ -26,11 +26,16 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     final AppDatabase database = Provider.of<AppDatabase>(context);
     final List menuFunc = [
-      () {
-        null;
+      (value) {
+        setState(() {
+          sliderValue[0] = (value <= sliderValue[1]) ? sliderValue[1] : value;
+        });
       },
-      () {
-        null;
+      (value) {
+        setState(() {
+          sliderValue[1] = (value);
+          sliderValue[0] = (value >= sliderValue[0]) ? value : sliderValue[0];
+        });
       },
       () {
         final superContext = context;
@@ -88,17 +93,13 @@ class _SettingsState extends State<Settings> {
                 (Slider(
                   min: 0,
                   max: 100,
+                  divisions: 20,
                   value: sliderValue[0],
-                  onChanged: (value) {
-                    setState(() {
-                      sliderValue[0] =
-                          (value <= sliderValue[1]) ? sliderValue[1] : value;
-                    });
-                  },
+                  onChanged: menuFunc[0],
                 )),
               ],
             ),
-            onTap: menuFunc[0],
+            onTap: null,
           ),
           ListTile(
             title: Row(
@@ -116,18 +117,13 @@ class _SettingsState extends State<Settings> {
                 Slider(
                   min: 0,
                   max: 100,
+                  divisions: 20,
                   value: sliderValue[1],
-                  onChanged: (value) {
-                    setState(() {
-                      sliderValue[1] = (value);
-                      sliderValue[0] =
-                          (value >= sliderValue[0]) ? value : sliderValue[0];
-                    });
-                  },
+                  onChanged: menuFunc[1],
                 ),
               ],
             ),
-            onTap: menuFunc[1],
+            onTap: null,
           ),
           ListTile(
             title: Row(
