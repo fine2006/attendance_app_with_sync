@@ -1,5 +1,7 @@
+import 'package:attendance_app_with_sync/database/sharedprefs.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_app_with_sync/database/database.dart';
+import 'package:flutter_smart_debouncer/flutter_smart_debouncer.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
@@ -10,35 +12,42 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final sliderDebouncer = Debouncer<void>(
+    delay: const Duration(milliseconds: 500),
+  );
   final List<String> menuTitles = <String>[
-    "Yellow Threshold",
-    "Red Threshold",
+    "High Threshold",
+    "Low Threshold",
     "Clear All Subjects",
   ];
   final List<String> menuDesc = <String>[
     //"The percentage at which the subject is marked with yellow",
     //"The percentage at which the subject is marked with red",
-    "Coming soon!",
-    "Coming soon!",
+    "Attendance Threshold for warning.",
+    "Attendance Threshold for alert.",
     "Reset all settings, and delete all subjects",
   ];
   List<bool> isSlider = <bool>[true, true, false];
-  List<double> sliderValue = <double>[85, 75, 0];
+  late List<double> sliderValue = <double>[85, 75, 0];
+  void setSliders() async {
+    double lo = await AppPreferences.loadLowBound();
+    double hi = await AppPreferences.loadHighBound();
+    setState(() {
+      sliderValue[0] = hi;
+      sliderValue[1] = lo;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setSliders();
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppDatabase database = Provider.of<AppDatabase>(context);
     final List menuFunc = [
-      //(value) {
-      //  setState(() {
-      //    sliderValue[0] = (value <= sliderValue[1]) ? sliderValue[1] : value;
-      //  });
-      //},
-      //(value) {
-      //  setState(() {
-      //    sliderValue[1] = (value);
-      //    sliderValue[0] = (value >= sliderValue[0]) ? value : sliderValue[0];
-      //  });
-      //},
       null,
       null,
       () {
@@ -82,7 +91,7 @@ class _SettingsState extends State<Settings> {
         children: [
           SizedBox(height: 10),
           ListTile(
-            enabled: false,
+            enabled: true,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -95,19 +104,27 @@ class _SettingsState extends State<Settings> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(menuDesc[0], softWrap: true),
-                (Slider(
+                Slider(
                   min: 0,
                   max: 100,
                   divisions: 20,
                   value: sliderValue[0],
-                  onChanged: menuFunc[0],
-                )),
+                  onChanged: (value) {
+                    setState(() {
+                      sliderValue[0] =
+                          (value <= sliderValue[1]) ? sliderValue[1] : value;
+                    });
+                    sliderDebouncer(() {
+                      AppPreferences.saveHighBound(sliderValue[0]);
+                    });
+                  },
+                ),
               ],
             ),
             onTap: null,
           ),
           ListTile(
-            enabled: false,
+            enabled: true,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -125,7 +142,17 @@ class _SettingsState extends State<Settings> {
                   max: 100,
                   divisions: 20,
                   value: sliderValue[1],
-                  onChanged: menuFunc[1],
+                  onChanged: (value) {
+                    setState(() {
+                      sliderValue[1] = (value);
+                      sliderValue[0] =
+                          (value >= sliderValue[0]) ? value : sliderValue[0];
+                    });
+                    sliderDebouncer(() {
+                      AppPreferences.saveHighBound(sliderValue[0]);
+                      AppPreferences.saveLowBound(sliderValue[1]);
+                    });
+                  },
                 ),
               ],
             ),
